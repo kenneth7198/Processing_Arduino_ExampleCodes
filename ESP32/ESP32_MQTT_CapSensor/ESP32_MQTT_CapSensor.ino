@@ -9,7 +9,7 @@ const char* WIFI_SSID = "NetArt";
 const char* WIFI_PASS = "1qaz2wsx";
 
 // 固定 IP 設定（必須設定）
-IPAddress local_IP(192, 168, 100, 201);       // ESP32 的固定 IP
+IPAddress local_IP(192, 168, 100, 201);       // ESP32 的固定 IP (根據自己組別 110 120 130 140 ... 類推
 IPAddress gateway(192, 168, 100, 1);          // 路由器閘道
 IPAddress subnet(255, 255, 255, 0);           // 子網路遮罩
 IPAddress primaryDNS(8, 8, 8, 8);             // DNS 伺服器
@@ -20,7 +20,7 @@ const int   MQTT_PORT = 1883;                 // MQTT Port
 const char* DEVICE_ID = "esp32-touch-01";     // 設備 ID（每台設備要不同, 根據自己組別 01 02 03 04 ... 類推）
 
 // 硬體設定
-const int TOUCH_SENSOR_PIN = 12;              // 電容觸摸感測器接在 GPIO 12 (數位輸入，不受 WiFi 影響)
+const int TOUCH_SENSOR_PIN = 12;              // 電容觸摸感測器接在 GPIO 12 (數位輸入，比較不受 WiFi 影響)
 
 // 發送間隔
 const unsigned long SEND_INTERVAL = 100;      // 每 0.1 秒檢查一次 (毫秒)
@@ -140,7 +140,7 @@ void connectMQTT() {
 
 // 讀取並發送觸摸感測器數據
 void sendTouchData() {
-  // ✅ 使用 digitalRead 讀取 GPIO 12（數位輸入）
+  // 使用 digitalRead 讀取 GPIO 12（數位輸入）
   int touchState = digitalRead(TOUCH_SENSOR_PIN);
   
   // 只在狀態改變時發送（減少不必要的訊息）
@@ -152,13 +152,13 @@ void sendTouchData() {
     String status;
     
     if (touchState == LOW) {
-      // 觸摸感測器被觸發（大多數觸摸模組輸出 LOW）
-      message = "1";  // 觸摸
-      status = "觸摸";
+      // 觸摸感測器被觸發（觸摸模組輸出 LOW 相當於被觸發）
+      message = "0";  
+      status = "釋放";
     } else {
       // 未觸摸
-      message = "0";  // 未觸摸
-      status = "釋放";
+      message = "1";  
+      status = "觸摸";
     }
     
     // 發布到 MQTT Broker
